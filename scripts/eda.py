@@ -9,7 +9,7 @@ class Descriptive:
 
 
     def headline_length(self):
-        self.df['headline length']=len(self.df['headline'])
+        self.df["headline length"] = self.df["headline"].apply(len)
         return self.df
  
     def check_missing(self):
