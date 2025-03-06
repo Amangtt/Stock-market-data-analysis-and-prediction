@@ -1,31 +1,99 @@
 import pandas as pd
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import nltk
-
+import matplotlib.pyplot as plt
 sid=SentimentIntensityAnalyzer()
 
+df=pd.read_csv('./Data/raw_analyst_ratings.csv')
 
-def con(df):
-    # Count the occurrences of each publisher
-    count = df.groupby('publisher').size().reset_index(name='publisher count')
-    count = count.sort_values(by='publisher count', ascending=False)
+class publisher:
+    def __init__(self,df):
+        self.df=df
+    def count_publisher(self):
+        # Count the occurrences of each publisher
+        count = self.df.groupby('publisher').size().reset_index(name='publisher count')
+        count = count.sort_values(by='publisher count', ascending=False)
+        
+        # Get the top 3 publishers
+        top_3 = count.head(3)
+
+        # Filter the original DataFrame for the top 3 publishers
+        top_publishers = top_3['publisher'].tolist()
+        #filtered_df = df[df['publisher'].isin(top_publishers)]
+
+      
+        return top_publishers
     
-    # Get the top 3 publishers
-    top_3 = count.head(3)
+    def count_unique_domains(df):
+        domain_count = {}
 
-    # Filter the original DataFrame for the top 3 publishers
-    top_publishers = top_3['publisher'].tolist()
-    filtered_df = df[df['publisher'].isin(top_publishers)]
+        for publisher in df["publisher"]:
+            if "@" in publisher:  # Checking if its an email
+                domain = publisher.split("@")[-1]
+                domain_count[domain] = domain_count.get(domain, 0) + 1
 
-    # Calculate sentiment scores for the headlines
-    filtered_df['score'] = filtered_df['headline'].apply(lambda headline: sid.polarity_scores(headline)['compound'])
+        return domain_count
+    
+    def pub_over_time(self):
+        df=self.df
+        df['date'] = df['date'].str[:10]
+        df['date']= pd.to_datetime(df['date'])
+        df['day_of_week'] = df['date'].dt.day_name()
 
-    # Classify sentiment based on compound score
-    filtered_df['sentiment'] = filtered_df['score'].apply(lambda score: 'Positive' if score >= 0.05 
-    else ('Negative' if score <= -0.05 else 'Neutral'))
+        # Count the number of articles by day of the week
+        day_counts = df['day_of_week'].value_counts()
 
-    sentiment_counts_per_publisher = filtered_df.groupby('publisher')['sentiment'].value_counts().unstack(fill_value=0)
-    return sentiment_counts_per_publisher
+        # Reorder the days for proper plotting
+        day_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+        day_counts = day_counts.reindex(day_order)
+
+        # Plot the results
+        plt.figure(figsize=(10, 6))
+        day_counts.plot(kind='bar', color='red')
+        plt.title('Number of Articles Published by Day of the Week')
+        plt.xlabel('Day of the Week')
+        plt.ylabel('Number of Articles')
+        
+        plt.show()
+    
+
+    def plot_article_by_hour(self):
+        df=self.df
+        df['date']= pd.to_datetime(df['date'],errors='coerce')
+        df['hour'] = df['date'].dt.hour
+        hourly_counts = df['hour'].value_counts().sort_index()
+
+        # Plotting the results
+        plt.figure(figsize=(10, 5))
+        hourly_counts.plot(kind='bar', color='skyblue')
+        plt.xlabel('Hour')
+        plt.ylabel('Number of Articles')
+        plt.grid(axis='y')
+        plt.show()
+ 
 
 
-
+    def event(self):
+        df=self.df
+        # Example market events
+        df['date'] = df['date'].str[:10]
+        df['date']= pd.to_datetime(df['date'])
+        daily_frequency = df.resample('D', on='date').size()
+        market_events = {
+        '2011-08-05': "U.S. Credit Rating Downgraded by S&P",
+        '2012-09-13': "Federal Reserve Announces QE3",
+        '2016-06-23': "Brexit Referendum",
+        '2016-11-08': "U.S. Presidential Election (Donald Trump Elected)",
+        '2018-03-22': "U.S. Imposes Tariffs on Chinese Goods (Start of Trade War)",
+        '2020-03-23': "COVID-19 Pandemic Leads to Global Market Crash",
+        '2020-04-20': "Oil Prices Turn Negative for the First Time in History",
+        '2020-03-15': "Federal Reserve Slashes Interest Rates to Near Zero"
+    }
+        # Plot daily publication frequency with market events
+        ax = daily_frequency.plot(title='Daily Publication Frequency with Market Events', figsize=(10, 6))
+        for event_date, event_name in market_events.items():
+            ax.axvline(pd.to_datetime(event_date), color='skyblue', linestyle='--', label=event_name)
+        plt.xlabel('Date')
+        plt.ylabel('Number of Articles')
+        plt.legend()
+        plt.show()
