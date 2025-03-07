@@ -40,8 +40,8 @@ class Descriptive:
     def plot_article_over_time(self):
         try:
             df=self.df
-            df['date'] = df['date'].str[:10]
-            df['date'] = pd.to_datetime(df['date'])
+            """df['date'] = df['date'].str[:10]
+            df['date'] = pd.to_datetime(df['date'])"""
             count_by_date= df.groupby('date').size().reset_index(name='Trend by date')
             self.logger.info("Ploting articles published overtime.")
             plt.figure(figsize=(12, 6))

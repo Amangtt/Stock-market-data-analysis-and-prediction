@@ -4,7 +4,7 @@ import nltk
 import matplotlib.pyplot as plt
 sid=SentimentIntensityAnalyzer()
 
-df=pd.read_csv('./Data/raw_analyst_ratings.csv')
+
 
 class publisher:
     def __init__(self,df,logger):
@@ -45,8 +45,7 @@ class publisher:
         """ Count the number of publish for each day to see when are most articles published"""
         try:
             df=self.df
-            df['date'] = df['date'].str[:10]
-            df['date']= pd.to_datetime(df['date'])
+            
             df['day_of_week'] = df['date'].dt.day_name()
 
             # Count the number of articles by day of the week
@@ -71,7 +70,7 @@ class publisher:
         """ Count the number of publish for each hour to see when are most articles published"""
         try:
             df=self.df
-            df['date']= pd.to_datetime(df['date'],errors='coerce')
+            
             df['hour'] = df['date'].dt.hour
             hourly_counts = df['hour'].value_counts().sort_index()
             self.logger.info("Ploting articles published on each hour")
@@ -93,8 +92,6 @@ class publisher:
         try:
             df=self.df
             # Example market events
-            df['date'] = df['date'].str[:10]
-            df['date']= pd.to_datetime(df['date'])
             daily_frequency = df.resample('D', on='date').size()
             market_events = {
             '2011-08-05': "U.S. Credit Rating Downgraded by S&P",

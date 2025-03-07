@@ -36,14 +36,14 @@ class sentiment:
                         error_message = f"Failed to tokenize words: {e}"
                         self.logger.error(error_message)
 
-        def sentiment_analysis(self):
+        def sentiment_analysis(self,path):
         # Apply preprocessing
                 try:
                         df=self.df
                         df['processed_headline'] = df['headline'].apply(self.preprocess)
 
                         # Select first 50 rows as a DataFrame
-                        head = df[['headline', 'processed_headline']].head(50).copy()
+                        head = df[['headline', 'processed_headline']].copy()
 
                         # Sentiment Analysis using TextBlob
                         head['score'] = head['processed_headline'].apply(lambda x: TextBlob(x).sentiment.polarity)
@@ -57,6 +57,7 @@ class sentiment:
                                                                 else ('Negative' if score <= -0.05 else 'Neutral'))
                         self.logger.info("Sentiment analysis completed successfully.")
                         # Print output
+                        head.to_csv(path)
                         return head
                 except Exception as e:
                         error_message = f"Sentiment analysis falied: {e}"
