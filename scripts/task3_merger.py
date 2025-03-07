@@ -5,9 +5,11 @@ from datetime import datetime
 import os, sys
 current_dir = os.getcwd()
 target_dir = os.path.join(current_dir, 'Stock-market-data-analysis-and-prediction')
+d=pd.read_csv('./Data/raw_analyst_ratings.csv')
+b=pd.read_csv('./Data/financial_news.csv')
 
 sys.path.insert(0, target_dir)
-from scripts.Sentiment_analysis import sentiment_analysis
+
 
 class merge:
     def load_datas(news,stock):
@@ -26,21 +28,24 @@ class merge:
         filtered_data.drop(columns=['date'], inplace=True)
         return filtered_data
     
-    def call_sentiment_analysis(news,stocks,combine):
-        merged_data= combine
-        df= sentiment_analysis(merged_data)
-        df['Date'] = pd.to_datetime(df['Date'])
-        mean_scores = df.groupby(df['Date'].dt.date)['score'].mean()
-        df['score'] = mean_scores.reindex(df['Date'].dt.date).values
-        df['sentiment']= df['score'].apply(lambda score: 'Positive' if score >= 0.05 
-            else ('Negative' if score <= -0.05 else 'Neutral'))
-        result_df = df.drop_duplicates(subset='Date')
-        p=['Date', 'Close', 'sentiment','score']
-        return result_df
-   
+    def merge(d,b):
+        
+        d_selected = d[['headline', 'date']]
+    
+        # Perform inner merge on 'headline'
+        df_merged = pd.merge(b, d_selected, on='headline', how='inner')
+        
+        # Drop the 'url' column
+        df_merged = df_merged.drop(columns='url', errors='ignore')  # Ignore errors if 'url' is not present
+        
+        # Save to CSV
+        df_merged.to_csv('./Data/financial_newss.csv', index=False)
+
+        
     def final(news,stocks,call_sentiment_analysis):
         df= call_sentiment_analysis
         df['Daily Return'] = df['Close'].pct_change() 
         p=['Date', 'Close', 'score','sentiment','Daily Return']
         return df[p]
     
+merge.merge(d,b)
