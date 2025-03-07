@@ -43,7 +43,7 @@ class sentiment:
                         df['processed_headline'] = df['headline'].apply(self.preprocess)
 
                         # Select first 50 rows as a DataFrame
-                        head = df[['headline', 'processed_headline']].copy()
+                        head = df[['headline', 'processed_headline','date']].copy()
 
                         # Sentiment Analysis using TextBlob
                         head['score'] = head['processed_headline'].apply(lambda x: TextBlob(x).sentiment.polarity)
