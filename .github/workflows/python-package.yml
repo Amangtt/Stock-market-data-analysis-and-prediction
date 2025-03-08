@@ -25,7 +25,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential gcc wget
-          sudo apt-get install -y libta-lib0 libta-lib-dev  # Install required TA-Lib libraries
+          sudo apt-get install -y python3-dev  # Add python3-dev to ensure proper building
 
       - name: Install TA-Lib from Source
         run: |
@@ -44,4 +44,5 @@ jobs:
           pip install -r requirements.txt  # Install other dependencies
 
       - name: Run Tests
-        run: pytest tests/ --maxfail=5 --disable-warnings --cov=financial_analysis
+        run: |
+          pytest tests/ --maxfail=5 --disable-warnings --cov=financial_analysis
