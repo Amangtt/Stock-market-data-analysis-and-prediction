@@ -1,0 +1,12 @@
+nltk
+pandas
+numpy
+plotly
+talib
+matplotlib
+pynance
+scipy
+yfinance
+statsmodels
+textblob
+spacy
