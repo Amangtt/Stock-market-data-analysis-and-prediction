@@ -23,7 +23,10 @@ jobs:
 
       - name: Install Dependencies
         run: |
+          sudo apt-get update
+          sudo apt-get install -y libta-lib0 libta-lib-dev
           python -m pip install --upgrade pip
+          pip install ta-lib
           pip install -r requirements.txt  # Ensure you have a requirements.txt file
 
       - name: Run Tests
