@@ -10,3 +10,4 @@ statsmodels
 textblob
 spacy
 pytest
+pytest-cov
