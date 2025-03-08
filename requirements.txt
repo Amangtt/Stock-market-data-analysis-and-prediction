@@ -9,4 +9,4 @@ yfinance
 statsmodels
 textblob
 spacy
-
+pytest
