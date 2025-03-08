@@ -25,6 +25,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential gcc wget
+          sudo apt-get install -y libta-lib0 libta-lib-dev  # Install required TA-Lib libraries
 
       - name: Install TA-Lib from Source
         run: |
@@ -34,6 +35,7 @@ jobs:
           ./configure --prefix=/usr
           make
           sudo make install
+          sudo ldconfig  # Reload library paths
 
       - name: Install Python Dependencies
         run: |
