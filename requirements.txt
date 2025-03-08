@@ -2,7 +2,6 @@ nltk
 pandas
 numpy
 plotly
-ta-lib
 matplotlib
 pynance
 scipy
