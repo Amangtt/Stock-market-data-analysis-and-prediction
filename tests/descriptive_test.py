@@ -1,6 +1,6 @@
 import pytest
 import pandas as pd
-from scripts.eda import Descriptive  # Ensure the class is imported from the correct module
+from scripts.eda import Descriptive  
 
 @pytest.fixture
 def sample_data():
